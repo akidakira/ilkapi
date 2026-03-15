@@ -22,6 +22,11 @@ import com.example.ilkapi.repository.IEmployeeRepository;
 @Service
 public class EmployeeServiceImpl implements IEmployeeService{
 
+	/*private final IEmployeeRepository employeeRepository;
+	public EmployeeServiceImpl(IEmployeeRepository employeeRepository) {
+		this.employeeRepository = employeeRepository;
+	}*/
+	
 	@Autowired
 	private IEmployeeRepository employeeRepository;
 	

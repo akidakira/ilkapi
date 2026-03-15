@@ -25,8 +25,12 @@ import jakarta.validation.Valid;
 @RequestMapping(path = "/rest/api")
 public class EmployeeControllerImpl implements IEmployeeController{
 
-	@Autowired
-	private IEmployeeService employeeService;
+	
+	private final IEmployeeService employeeService;
+	
+	public EmployeeControllerImpl(IEmployeeService employeeService) {
+		this.employeeService = employeeService;
+	}
 	
 	@Override
 	@PostMapping(path = "/create/employee")

@@ -3,35 +3,35 @@ package com.example.ilkapi.controllertest;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON;
 import java.sql.Date;
-import java.util.Optional;
-
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import com.example.ilkapi.dto.DepartmentDto;
+import com.example.ilkapi.controller.EmployeeControllerImpl;
 import com.example.ilkapi.dto.EmployeeDto;
 import com.example.ilkapi.dto.EmployeeDtoIU;
-import com.example.ilkapi.entity.Department;
-import com.example.ilkapi.entity.Employee;
+import com.example.ilkapi.repository.IDepartmentRepository;
+import com.example.ilkapi.service.IDepartmentService;
 import com.example.ilkapi.service.IEmployeeService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@SpringBootTest
-@AutoConfigureMockMvc
+
+@WebMvcTest(EmployeeControllerImpl.class)
+@AutoConfigureMockMvc(addFilters = false)
 public class EmployeeControllerImplTest {
 
 	@Autowired
@@ -43,6 +43,9 @@ public class EmployeeControllerImplTest {
 	@MockBean
 	private IEmployeeService employeeService;
 	
+	@MockBean
+	private IDepartmentService departmentService;
+	
 	EmployeeDto employeeDto = new EmployeeDto();
 	EmployeeDtoIU employeeDtoIU = new EmployeeDtoIU();
 	
@@ -51,8 +54,6 @@ public class EmployeeControllerImplTest {
 	
 	@BeforeEach
 	public void setUp() {
-		
-		
 		
 		employeeDtoIU.setEmployeeName("employee-name");
 		employeeDtoIU.setEmployeeLastname("employee-lastname");
@@ -77,16 +78,14 @@ public class EmployeeControllerImplTest {
 	          	.andExpect(jsonPath("$.data.employeeName").value(employeeDto.getEmployeeName()))
 	            .andDo(print())
 	            .andExpect(status().isOk());
-	    		
 	    
-	    employeeService.createEmployee(employeeDtoIU);
-	    
-	    verify(employeeService).createEmployee(employeeDtoIU);
+	    verify(employeeService).createEmployee(any(EmployeeDtoIU.class));
 		
 	}
 	
 	@Test
 	public void findByIdEmployeeTest() throws Exception{
+		
 		when(employeeService.findByIdEmployee(employeeId)).thenReturn(employeeDto);
 		
 		mockMvc.perform(get("/rest/api/findbyid/{employeeId}", employeeId))
@@ -97,6 +96,43 @@ public class EmployeeControllerImplTest {
 		
 		verify(employeeService).findByIdEmployee(employeeId);
 	}
+	
+	@Test
+	public void getAllEmployeesTest() throws Exception{
+		
+		List<EmployeeDto> employeeList = List.of(employeeDto);
+		
+		when(employeeService.getAllEmployees()).thenReturn(employeeList);
+		
+		mockMvc.perform(get("/rest/api/getall/employee"))
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.code").value("LIST_FOUND"))
+				.andExpect(jsonPath("$.data").isArray())
+				.andExpect(jsonPath("$.data[0].employeeName").value(employeeDto.getEmployeeName()));
+				
+				
+		
+		verify(employeeService).getAllEmployees();
+	}
+	
+	@Test
+	public void deleteByIdEmployeeTest() throws Exception{
+		
+		when(employeeService.deleteByIdEmployee(employeeId)).thenReturn(true);
+		
+		mockMvc.perform(delete("/rest/api/delete/employee/byid/{employeeId}",employeeId))
+		.andDo(print())
+		.andExpect(status().isOk())
+		.andExpect(jsonPath("$.code").value("EMPLOYEE_DELETED"))
+		.andExpect(jsonPath("$.data").value(true));
+		
+		verify(employeeService).deleteByIdEmployee(employeeId);
+	}
+	
+	
+	
+	
 	
 	
 	
