@@ -1,12 +1,13 @@
 package com.example.ilkapi.controllertest;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -14,7 +15,6 @@ import java.sql.Date;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -22,9 +22,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import com.example.ilkapi.controller.EmployeeControllerImpl;
+import com.example.ilkapi.dto.DepartmentDto;
 import com.example.ilkapi.dto.EmployeeDto;
 import com.example.ilkapi.dto.EmployeeDtoIU;
-import com.example.ilkapi.repository.IDepartmentRepository;
+import com.example.ilkapi.entity.Department;
 import com.example.ilkapi.service.IDepartmentService;
 import com.example.ilkapi.service.IEmployeeService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -48,6 +49,10 @@ public class EmployeeControllerImplTest {
 	
 	EmployeeDto employeeDto = new EmployeeDto();
 	EmployeeDtoIU employeeDtoIU = new EmployeeDtoIU();
+	EmployeeDtoIU newEmployee = new EmployeeDtoIU();
+	
+	DepartmentDto departmentDto = new DepartmentDto();
+	Department department = new Department();
 	
 	Long employeeId = 1L;
 	Long departmentId = 1L;
@@ -60,8 +65,22 @@ public class EmployeeControllerImplTest {
 		employeeDtoIU.setEmployeeBirthDate(Date.valueOf("1999-03-12"));
 		employeeDtoIU.setDepartmentId(departmentId);
 		
+		newEmployee.setEmployeeName("new-employee-name");
+		newEmployee.setEmployeeLastname("new-employee-lastname");
+		newEmployee.setEmployeeBirthDate(Date.valueOf("1999-01-01"));
+		newEmployee.setDepartmentId(departmentId);
+		
+		department.setDepartmentId(departmentId);
+		department.setDepartmentName("department-name");
+		department.setDepartmentLocation("department-location");
+		
+		departmentDto.setDepartmentId(department.getDepartmentId());
+		departmentDto.setDepartmentName(department.getDepartmentName());
+		departmentDto.setDepartmentLocation(department.getDepartmentLocation());
+		
 		employeeDto.setEmployeeId(employeeId);
 		employeeDto.setEmployeeName(employeeDtoIU.getEmployeeName());
+		employeeDto.setDepartmentDto(departmentDto);
 		
 	}
 	
@@ -72,12 +91,13 @@ public class EmployeeControllerImplTest {
         .thenReturn(employeeDto);
 
 	    mockMvc.perform(post("/rest/api/create/employee")
-	            .contentType(MediaType.APPLICATION_JSON)
-	            .content(objectMapper.writeValueAsString(employeeDtoIU)))
-	    		.andExpect(jsonPath("$.code").value("EMPLOYEE_CREATED"))
-	          	.andExpect(jsonPath("$.data.employeeName").value(employeeDto.getEmployeeName()))
-	            .andDo(print())
-	            .andExpect(status().isOk());
+	    .contentType(MediaType.APPLICATION_JSON)
+	    .content(objectMapper.writeValueAsString(employeeDtoIU)))
+	    .andDo(print())
+	    .andExpect(status().isOk())
+	    .andExpect(jsonPath("$.code").value("EMPLOYEE_CREATED"))
+	    .andExpect(jsonPath("$.data.employeeName").value(employeeDto.getEmployeeName()))
+	    .andExpect(jsonPath("$.data.departmentDto.departmentName").value(departmentDto.getDepartmentName()));
 	    
 	    verify(employeeService).createEmployee(any(EmployeeDtoIU.class));
 		
@@ -105,11 +125,11 @@ public class EmployeeControllerImplTest {
 		when(employeeService.getAllEmployees()).thenReturn(employeeList);
 		
 		mockMvc.perform(get("/rest/api/getall/employee"))
-				.andDo(print())
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.code").value("LIST_FOUND"))
-				.andExpect(jsonPath("$.data").isArray())
-				.andExpect(jsonPath("$.data[0].employeeName").value(employeeDto.getEmployeeName()));
+		.andDo(print())
+		.andExpect(status().isOk())
+		.andExpect(jsonPath("$.code").value("LIST_FOUND"))
+		.andExpect(jsonPath("$.data").isArray())
+		.andExpect(jsonPath("$.data[0].employeeName").value(employeeDto.getEmployeeName()));
 				
 				
 		
@@ -130,10 +150,18 @@ public class EmployeeControllerImplTest {
 		verify(employeeService).deleteByIdEmployee(employeeId);
 	}
 	
-	
-	
-	
-	
-	
-	
+	@Test
+	public void updateEmployeeByIdTest() throws Exception{
+		when(employeeService.updateEmployeeById(eq(employeeId), any())).thenReturn(employeeDto);
+		
+		mockMvc.perform(put("/rest/api/update/employee/byid/{employeeId}", employeeId)
+		.contentType(MediaType.APPLICATION_JSON)
+		.content(objectMapper.writeValueAsString(employeeDtoIU)))
+		.andDo(print())
+		.andExpect(status().isOk())
+		.andExpect(jsonPath("$.code").value("EMPLOYEE_UPDATED"))
+		.andExpect(jsonPath("$.data.employeeName").value(employeeDtoIU.getEmployeeName()));
+		
+		verify(employeeService).updateEmployeeById(eq(employeeId), any());
+	}
 }
