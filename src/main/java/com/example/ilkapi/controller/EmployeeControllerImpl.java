@@ -58,7 +58,7 @@ public class EmployeeControllerImpl implements IEmployeeController{
 
 	@Override
 	@PutMapping(path = "/update/employee/byid/{id}")
-	public ResponseEntity<ApiResponse<EmployeeDto>> updateEmployeeById(@PathVariable("id") Long id, @RequestBody EmployeeDtoIU employee) {
+	public ResponseEntity<ApiResponse<EmployeeDto>> updateEmployeeById(@PathVariable("id") Long id, @Valid @RequestBody EmployeeDtoIU employee) {
 		return ResponseEntity.ok(ApiResponse.success(ResponseType.EMPLOYEE_UPDATED, employeeService.updateEmployeeById(id, employee)));
 	}
 

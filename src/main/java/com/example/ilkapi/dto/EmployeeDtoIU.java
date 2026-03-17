@@ -15,12 +15,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class EmployeeDtoIU {
 
-	@NotBlank(message = "isim alanı boş olmamalı")
-	@Size(min = 3, max = 20, message = "en az 3 ve en fazla 20 karakter olmalıdır")
+	@NotBlank(message = "The name should not be left blank.")
+	@Size(min = 3, max = 20, message = "It must be at least 3 and at most 20 characters long.")
 	private String employeeName;
 	
-	@NotBlank(message = "soyisim alanı boş olmamalı")
-	@Size(min = 3, max = 20, message = "en az 3 ve en fazla 20 karakter olmalıdır")
+	@NotBlank(message = "The lastname should not be left blank.")
+	@Size(min = 3, max = 20, message = "It must be at least 3 and at most 20 characters long.")
 	private String employeeLastname;
 	
 	private Date employeeBirthDate;

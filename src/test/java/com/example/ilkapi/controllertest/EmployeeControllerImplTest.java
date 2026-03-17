@@ -2,6 +2,7 @@ package com.example.ilkapi.controllertest;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -163,5 +164,19 @@ public class EmployeeControllerImplTest {
 		.andExpect(jsonPath("$.data.employeeName").value(employeeDtoIU.getEmployeeName()));
 		
 		verify(employeeService).updateEmployeeById(eq(employeeId), any());
+	}
+	
+	//validation tests
+	
+	@Test
+	public void createEmployeeValidationTest() throws Exception{
+		
+		newEmployee.setEmployeeName(null);
+		
+		mockMvc.perform(post("/rest/api/create/employee")
+		.contentType(MediaType.APPLICATION_JSON)
+		.content(objectMapper.writeValueAsString(newEmployee)))
+		.andDo(print())
+		.andExpect(jsonPath("$.employeeName").value("The name should not be left blank."));
 	}
 }

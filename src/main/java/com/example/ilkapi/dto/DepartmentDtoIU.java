@@ -13,10 +13,10 @@ import lombok.NoArgsConstructor;
 public class DepartmentDtoIU {
 
 	@Size(min = 3, max = 50)
-	@NotBlank(message = "departman isim alanı boş olmamalı")
+	@NotBlank(message = "The department name should not be left blank.")
 	private String departmentName;
 	
-	@NotBlank(message = "departman lokasyon alanı boş olmamalı")
+	@NotBlank(message = "The department location should not be left blank.")
 	private String departmentLocation;
 	
 }

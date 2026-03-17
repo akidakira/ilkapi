@@ -54,7 +54,7 @@ public class DepartmentControllerImpl implements IDepartmentController{
 
 	@Override
 	@PutMapping(path = "/update/department/byid/{id}")
-	public ResponseEntity<ApiResponse<DepartmentDto>> updateDepartmentById(@PathVariable("id") long id,@RequestBody DepartmentDtoIU department) {
+	public ResponseEntity<ApiResponse<DepartmentDto>> updateDepartmentById(@PathVariable("id") long id,@Valid @RequestBody DepartmentDtoIU department) {
 		return ResponseEntity.ok(ApiResponse.success(ResponseType.DEPARTMENT_UPDATED, departmentService.updateDepartmentById(id, department)));
 	}
 

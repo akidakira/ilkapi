@@ -15,13 +15,13 @@ public enum ResponseType {
 	//sadece doğru ve başarılı işlemler ek bir şey istenmeden controllerdan ok metodu ile çağırılır
 	//ancak hata olduğunda ve olacaksa bu iş service kısmında olmalı ve gerektiğinde kontrol edilmeli
 	
-	// -- SİSTEM HATALARI
+	// -- SYSTEM ERROR
 	INTERNAL_SERVER_EXCEPTİON("INTERNAL_SERVER_EXCEPTİON","Unexcepted Server Error", HttpStatus.INTERNAL_SERVER_ERROR),
 	
-	// -- VALİDASYON HATALARI
+	// -- VALIDATION ERROR
 	VALIDATION_ERROR("VALIDATION_ERROR","Validation Error", HttpStatus.BAD_REQUEST),
 	
-	// -- BAŞARILI İŞLEMLER
+	// -- SUCCESSFUL
 	EMPLOYEE_CREATED("EMPLOYEE_CREATED","Employee Successfully Created", HttpStatus.CREATED),
 	DEPARTMENT_CREATED("DEPARTMENT_CREATED","Department Successfully Created", HttpStatus.CREATED),
 	
@@ -35,7 +35,7 @@ public enum ResponseType {
 	EMPLOYEE_DELETED("EMPLOYEE_DELETED","Employee Successfully Deleted", HttpStatus.OK),
 	DEPARTMENT_DELETED("DEPARTMENT_DELETED","Department Successfully Deleted", HttpStatus.OK),
 	
-	// -- BAŞARISIZ İŞLEMLER
+	// -- UNSUCSESSFUL
 	LIST_NOT_FOUND("LIST_NOT_FOUND","List Not Found", HttpStatus.NOT_FOUND),
 	EMPLOYEE_NOT_FOUND("EMPLOYEE_NOT_FOUND","Employee Not Found", HttpStatus.NOT_FOUND),
 	DEPARTMENT_NOT_FOUND("DEPARTMENT_NOT_FOUND","Department Not Found", HttpStatus.NOT_FOUND);
