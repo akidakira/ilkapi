@@ -8,8 +8,8 @@ target/
 *.log
 
 ## PROPERTİES ##
-application.properties
-application.yml
+**/application.properties
+**/application.yml
 
 ## JAR ##
 *.jar
